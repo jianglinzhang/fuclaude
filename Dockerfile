@@ -6,7 +6,7 @@ ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Create data directory and set permissions
-RUN mkdir -p /data && chown 1000:1000 /data
+RUN mkdir -p /data && chown 10014:10014 /data
 
 # Set environment variable
 ENV FUCLAUDE_SIGNUP_ENABLED=true
