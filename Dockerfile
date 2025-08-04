@@ -25,7 +25,7 @@ RUN echo '{ \
   "show_session_key": true \
 }' > /data/config.json
 
-
+COPY config.json /data/config.json
 
 # Set working directory
 WORKDIR /data
