@@ -33,6 +33,8 @@ RUN echo '{ \
 # Set working directory
 WORKDIR /tmp
 
+RUN chmod -R 777 /tmp
+
 # Expose the port inside the container
 EXPOSE 8181
 
