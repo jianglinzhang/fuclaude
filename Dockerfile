@@ -11,8 +11,6 @@ RUN mkdir -p /data && chown 1000:1000 /data
 # Set environment variable
 ENV FUCLAUDE_SIGNUP_ENABLED=true
 
-# Switch to non-root user
-USER 10014
 
 # Create config.json file with the specified content
 RUN echo '{ \
@@ -34,6 +32,9 @@ WORKDIR /data
 
 # Expose the port inside the container
 EXPOSE 8181
+
+# Switch to non-root user
+USER 10014
 
 # Specify the command to run your application
 CMD ["./fuclaude"]
