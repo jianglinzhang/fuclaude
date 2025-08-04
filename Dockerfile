@@ -4,33 +4,30 @@ FROM pengzhile/fuclaude:latest
 # Set working directory
 WORKDIR /data
 
-# Create writable directories in /tmp (which is usually writable)
-RUN mkdir -p /tmp/fuclaude-data && \
-    mkdir -p /tmp/fuclaude-config && \
-    chown -R 10014:10014 /tmp/fuclaude-data /tmp/fuclaude-config
-
-# Copy any necessary files and set permissions
-# If there's a default config, copy it to the writable location
-RUN if [ -f "/data/config.json" ]; then \
-        cp /data/config.json /tmp/fuclaude-config/config.json && \
-        chown 10014:10014 /tmp/fuclaude-config/config.json; \
-    else \
-        touch /tmp/fuclaude-config/config.json && \
-        chown 10014:10014 /tmp/fuclaude-config/config.json; \
-    fi
-
-# Create a symbolic link or set environment variable
-RUN ln -sf /tmp/fuclaude-config/config.json /data/config.json || true
-
-# Set environment variables to point to writable locations
-ENV CONFIG_PATH=/tmp/fuclaude-config/config.json
-ENV DATA_PATH=/tmp/fuclaude-data
+# Create a startup script
+RUN echo '#!/bin/sh' > /tmp/start.sh && \
+    echo 'mkdir -p /tmp/fuclaude-config' >> /tmp/start.sh && \
+    echo 'mkdir -p /tmp/fuclaude-data' >> /tmp/start.sh && \
+    echo '# Copy default config if it exists' >> /tmp/start.sh && \
+    echo 'if [ -f "/data/config.json" ] && [ ! -f "/tmp/fuclaude-config/config.json" ]; then' >> /tmp/start.sh && \
+    echo '    cp /data/config.json /tmp/fuclaude-config/config.json' >> /tmp/start.sh && \
+    echo 'fi' >> /tmp/start.sh && \
+    echo '# Create empty config if none exists' >> /tmp/start.sh && \
+    echo 'if [ ! -f "/tmp/fuclaude-config/config.json" ]; then' >> /tmp/start.sh && \
+    echo '    echo "{}" > /tmp/fuclaude-config/config.json' >> /tmp/start.sh && \
+    echo 'fi' >> /tmp/start.sh && \
+    echo '# Create symlink or set environment' >> /tmp/start.sh && \
+    echo 'export CONFIG_PATH=/tmp/fuclaude-config/config.json' >> /tmp/start.sh && \
+    echo 'cd /data' >> /tmp/start.sh && \
+    echo 'exec ./fuclaude' >> /tmp/start.sh && \
+    chmod +x /tmp/start.sh && \
+    chown 10014:10014 /tmp/start.sh
 
 # Expose the port inside the container
 EXPOSE 8181
 
-# Switch to non-root user
+# Switch to non-root user  
 USER 10014
 
-# Specify the command to run your application
-CMD ["./fuclaude"]
+# Use the startup script
+CMD ["/tmp/start.sh"]
