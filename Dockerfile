@@ -5,12 +5,17 @@ FROM pengzhile/fuclaude:latest
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Create data directory and set permissions
-RUN mkdir -p /data && chown 10014:10014 /data
-
 # Set environment variable
 ENV FUCLAUDE_SIGNUP_ENABLED=true
 
+# Create data directory and set permissions
+RUN mkdir -p /data && chown 10014:10014 /data
+
+# Switch to non-root user BEFORE creating files
+USER 10014
+
+# Set working directory
+WORKDIR /data
 
 # Create config.json file with the specified content
 RUN echo '{ \
@@ -23,12 +28,7 @@ RUN echo '{ \
   "openai_api_key": "sk-xxx", \
   "moderation_enabled": false , \
   "show_session_key": true \
-}' > /data/config.json
-
-RUN chown 10014:10014 /data/config.json
-
-# Set working directory
-WORKDIR /data
+}' > config.json
 
 # Expose the port inside the container
 EXPOSE 8181
