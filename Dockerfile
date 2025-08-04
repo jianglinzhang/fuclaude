@@ -12,7 +12,7 @@ RUN mkdir -p /data && chown 1000:1000 /data
 ENV FUCLAUDE_SIGNUP_ENABLED=true
 
 # Switch to non-root user
-USER 1000
+USER 10014
 
 # Create config.json file with the specified content
 RUN echo '{ \
