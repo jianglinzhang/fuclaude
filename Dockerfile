@@ -8,13 +8,13 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Create data directory and set permissions
 RUN mkdir -p /data && chown 10014:10014 /data
 
+# Set permissions on /tmp while still root (if possible)
+RUN chmod 755 /tmp || true
+
 # Set environment variable
 ENV FUCLAUDE_SIGNUP_ENABLED=true
 
-# Switch to non-root user
-USER 10014
-
-# Create config.json file with the specified content
+# Create config.json file as root, then change ownership
 RUN echo '{ \
   "bind": "127.0.0.1:8181", \
   "timeout": 600, \
@@ -26,14 +26,13 @@ RUN echo '{ \
   "moderation_model": "omni-moderation-latest", \
   "moderation_enabled": false , \
   "signup_enabled": false \
-}' > /tmp/config.json
+}' > /tmp/config.json && chown 10014:10014 /tmp/config.json
 
-
+# Switch to non-root user
+USER 10014
 
 # Set working directory
 WORKDIR /tmp
-
-RUN chmod -R 777 /tmp
 
 # Expose the port inside the container
 EXPOSE 8181
