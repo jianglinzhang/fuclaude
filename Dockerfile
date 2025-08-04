@@ -25,7 +25,7 @@ RUN echo '{ \
   "openai_api_key": "sk-xxx", \
   "moderation_model": "omni-moderation-latest", \
   "moderation_enabled": false , \
-  "signup_enabled": false
+  "signup_enabled": false \
 }' > /tmp/config.json
 
 
