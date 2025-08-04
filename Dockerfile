@@ -11,24 +11,8 @@ ENV FUCLAUDE_SIGNUP_ENABLED=true
 # Create data directory and set permissions
 RUN mkdir -p /data && chown 10014:10014 /data
 
-# Switch to non-root user BEFORE creating files
-USER 10014
-
 # Set working directory
 WORKDIR /data
-
-# Create config.json file with the specified content
-RUN echo '{ \
-  "bind": "[::]:8181", \
-  "timeout": 600, \
-  "proxy_url": "", \
-  "real_logout": false, \
-  "cookie_secret": "1234567890abcdefghijklmnopqrstuv", \
-  "openai_base_url": "https://moderations.shellten.top/v1", \
-  "openai_api_key": "sk-xxx", \
-  "moderation_enabled": false , \
-  "show_session_key": true \
-}' > config.json
 
 # Expose the port inside the container
 EXPOSE 8181
